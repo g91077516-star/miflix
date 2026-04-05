@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiFlix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --red:#E50914;--red2:#b20710;
+      --bg:#080808;--bg2:#111;--bg3:#1a1a1a;
+      --muted:#999;--muted2:#555;
+      --fd:'Bebas Neue',sans-serif;
+      --fb:'Outfit',sans-serif;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:#fff;font-family:var(--fb);overflow-x:hidden}
+
+    /* NAV */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(8,8,8,0.97);border-bottom:1px solid rgba(255,255,255,.05)}
+    .nav-left{display:flex;align-items:center;gap:20px}
+    .logo{font-family:var(--fd);font-size:26px;color:var(--red);letter-spacing:3px;cursor:pointer;user-select:none}
+    .filter-bar{display:flex;gap:4px}
+    .fbtn{background:none;border:1px solid rgba(255,255,255,.15);color:var(--muted);font-family:var(--fb);font-size:12px;padding:5px 14px;border-radius:20px;cursor:pointer;transition:all .2s}
+    .fbtn:hover{border-color:rgba(255,255,255,.4);color:#fff}
+    .fbtn.active{background:#fff;color:#000;border-color:#fff;font-weight:500}
+    .nav-right{display:flex;align-items:center;gap:14px}
+    .search-box{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 14px}
+    .search-box input{background:none;border:none;outline:none;color:#fff;font-family:var(--fb);font-size:13px;width:200px}
+    .search-box input::placeholder{color:var(--muted2)}
+    .avatar{width:32px;height:32px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer}
+
+    /* HERO */
+    .hero{position:relative;height:90vh;display:flex;align-items:flex-end;padding-bottom:5rem}
+    .hero-bg{position:absolute;inset:0}
+    .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:brightness(.45)}
+    .hero-grad{position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,8,.92) 38%,transparent),linear-gradient(to top,rgba(8,8,8,1) 0%,transparent 50%)}
+    .hero-content{position:relative;z-index:2;padding:0 3rem;max-width:560px}
+    .hero-pill{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:4px;margin-bottom:12px}
+    .hero-title{font-family:var(--fd);font-size:clamp(3rem,6vw,5.5rem);line-height:1;letter-spacing:1px;margin-bottom:10px}
+    .hero-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+    .hero-match{color:#46d369;font-size:13px;font-weight:500}
+    .hero-badge{border:1px solid #aaa;color:#ccc;font-size:10px;padding:2px 7px;border-radius:3px}
+    .hero-dur{color:var(--muted);font-size:13px}
+    .hero-desc{font-size:14px;line-height:1.7;color:rgba(255,255,255,.75);margin-bottom:1.5rem}
+    .hero-btns{display:flex;gap:10px}
+
+    /* BUTTONS */
+    .btn-red{background:var(--red);color:#fff;border:none;padding:10px 24px;border-radius:6px;font-family:var(--fb);font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .2s}
+    .btn-red:hover{background:var(--red2)}
+    .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);padding:10px 22px;border-radius:6px;font-family:var(--fb);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .2s}
+    .btn-ghost:hover{background:rgba(255,255,255,.22)}
+    .btn-sm{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);padding:10px 20px;border-radius:6px;font-family:var(--fb);font-size:13px;cursor:pointer;transition:background .2s}
+    .btn-sm:hover{background:rgba(255,255,255,.2)}
+
+    /* CATALOG */
+    .categories{padding:0 2rem 5rem}
+    .cat-section{margin-bottom:2.5rem}
+    .cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px}
+    .cat-title{font-size:16px;font-weight:500;color:#ddd;margin:0}
+    .cat-arrows{display:flex;gap:6px}
+    .cat-arrow{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .cat-arrow:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.4)}
+    .cat-arrow svg{width:12px;height:12px}
+    .movies-grid{display:flex;flex-direction:row;gap:10px;overflow-x:auto;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+    .movies-grid::-webkit-scrollbar{height:4px}
+    .movies-grid::-webkit-scrollbar-track{background:transparent}
+    .movies-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+    .movies-grid .card{flex:0 0 150px;min-width:150px}
+
+    /* CARD */
+    .card{border-radius:8px;overflow:hidden;background:var(--bg3);cursor:pointer;transition:transform .25s,box-shadow .25s}
+    .card:hover{transform:scale(1.05);box-shadow:0 16px 50px rgba(0,0,0,.7);position:relative;z-index:2}
+    .card-img-wrap{position:relative;aspect-ratio:2/3;overflow:hidden}
+    .card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+    .card:hover .card-img-wrap img{transform:scale(1.06)}
+    .card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+    .card:hover .card-overlay{opacity:1}
+    .play-circle{width:40px;height:40px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center}
+    .card-star{color:#ffd700;font-size:12px;font-weight:500}
+    .type-pill{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.2);color:#ddd;font-size:9px;font-weight:600;letter-spacing:.5px;padding:2px 8px;border-radius:10px;text-transform:uppercase}
+    .card-info{padding:9px 10px 11px}
+    .card-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e0e0e0}
+    .card-sub{font-size:10px;color:var(--muted2);margin-top:3px}
+
+    /* DETAIL */
+    .detail-view{display:none;flex-direction:column}
+    .detail-hero{position:relative;height:400px;overflow:hidden}
+    .detail-hero img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:brightness(.4)}
+    .detail-grad{position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,8,.4) 50%,transparent)}
+    .back-btn{position:absolute;top:80px;left:24px;display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);color:#ddd;font-family:var(--fb);font-size:13px;padding:7px 16px;border-radius:7px;cursor:pointer;transition:background .2s}
+    .back-btn:hover{background:rgba(0,0,0,.8);color:#fff}
+    .detail-hero-text{position:absolute;bottom:28px;left:28px;right:28px}
+    .type-pill-lg{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 12px;border-radius:4px;margin-bottom:10px}
+    .detail-title{font-family:var(--fd);font-size:clamp(2.5rem,5vw,4.5rem);line-height:1;letter-spacing:1px;margin-bottom:10px}
+    .detail-badges{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .match-text{color:#46d369;font-size:13px;font-weight:500}
+    .bdg{border:1px solid #999;color:#ccc;font-size:10px;padding:2px 7px;border-radius:3px}
+    .bdg-txt{color:var(--muted);font-size:13px}
+    .detail-body{padding:0 28px 50px}
+    .player-wrap{display:none;margin-bottom:24px;border-radius:10px;overflow:hidden;position:relative;background:#000}
+    .player-wrap iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+    .player-close{position:absolute;top:12px;left:14px;z-index:10;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--fb);font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer}
+    .player-close:hover{background:rgba(0,0,0,.9)}
+    .detail-main{display:grid;grid-template-columns:1fr 260px;gap:32px;padding-top:8px;margin-bottom:32px}
+    .detail-actions{display:flex;gap:10px;margin-bottom:16px}
+    .detail-desc{font-size:14px;line-height:1.75;color:rgba(255,255,255,.75)}
+    .rating-block{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .rating-num{font-size:26px;font-weight:500;color:#ffd700}
+    .rating-stars{color:#ffd700;font-size:13px;letter-spacing:1px}
+    .rating-label{font-size:11px;color:var(--muted)}
+    .meta-item{display:flex;gap:6px;margin-bottom:10px;font-size:13px;align-items:flex-start}
+    .meta-label{color:var(--muted2);min-width:70px;flex-shrink:0}
+    .meta-val{color:#ccc}
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:5px}
+    .meta-tag{display:inline-block;background:var(--bg3);border:1px solid #2a2a2a;color:#bbb;font-size:11px;padding:2px 10px;border-radius:5px}
+    .similar-title{font-size:16px;font-weight:500;color:#ddd;margin-bottom:14px}
+    .similar-grid{display:flex;flex-direction:row;gap:10px;overflow-x:auto;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+    .similar-grid::-webkit-scrollbar{height:4px}
+    .similar-grid::-webkit-scrollbar-track{background:transparent}
+    .similar-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+    .similar-grid .sim-card{flex:0 0 130px;min-width:130px}
+    .sim-card{border-radius:7px;overflow:hidden;cursor:pointer;background:var(--bg3);transition:transform .2s}
+    .sim-card:hover{transform:scale(1.04)}
+    .sim-card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+    .sim-info{padding:7px 8px}
+    .sim-title{font-size:11px;font-weight:500;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sim-sub{font-size:10px;color:var(--muted2);margin-top:2px}
+
+    /* EPISODIOS */
+    .eps-section{margin-top:28px}
+    .eps-title{font-size:16px;font-weight:500;color:#ddd;margin-bottom:14px}
+    .temp-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+    .temp-tab{background:none;border:1px solid rgba(255,255,255,.15);color:#888;font-family:var(--fb);font-size:12px;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all .2s}
+    .temp-tab:hover{border-color:rgba(255,255,255,.3);color:#fff}
+    .temp-tab.active{background:#fff;color:#000;border-color:#fff;font-weight:500}
+    .ep-item{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background .15s;border:1px solid transparent}
+    .ep-item:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)}
+    .ep-num{width:32px;height:32px;border-radius:50%;border:1.5px solid #444;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888;flex-shrink:0}
+    .ep-info{flex:1}
+    .ep-titulo{font-size:13px;font-weight:500;color:#e0e0e0}
+    .ep-sub{font-size:11px;color:#555;margin-top:2px}
+    .ep-play{width:28px;height:28px;border-radius:50%;border:1.5px solid #444;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+    .ep-item:hover .ep-play{border-color:var(--red)}
+    .ep-item.playing{background:rgba(229,9,20,.08);border-color:rgba(229,9,20,.3)}
+    .ep-item.playing .ep-num{border-color:var(--red);color:var(--red)}
+    .ep-item.playing .ep-titulo{color:#fff}
+    .btn-lista{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);padding:10px 18px;border-radius:6px;font-family:var(--fb);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+    .btn-lista:hover{background:rgba(255,255,255,.2)}
+    .btn-lista.en-lista{background:rgba(229,9,20,.15);border-color:var(--red);color:var(--red)}
+    .progress-bar-wrap{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:4px;overflow:hidden;display:none}
+    .progress-bar-fill{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
+    .card-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.1)}
+    .card-progress-fill{height:100%;background:var(--red)}
+    .search-wrap{position:relative}
+    .search-preview{display:none;position:absolute;top:calc(100% + 8px);right:0;width:320px;background:#1a1a1a;border:1px solid rgba(255,255,255,.12);border-radius:10px;overflow:hidden;z-index:300}
+    .search-preview.visible{display:block}
+    .preview-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s}
+    .preview-item:hover{background:rgba(255,255,255,.07)}
+    .preview-item img{width:36px;height:54px;object-fit:cover;border-radius:4px;flex-shrink:0}
+    .preview-item-info{flex:1;min-width:0}
+    .preview-item-title{font-size:13px;font-weight:500;color:#e0e0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .preview-item-sub{font-size:11px;color:#666;margin-top:2px}
+    .preview-item-rating{font-size:11px;color:#ffd700;flex-shrink:0}
+    .preview-empty{padding:16px;text-align:center;color:#555;font-size:13px}
+    .preview-header{padding:8px 12px;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,.06)}
+    @media(max-width:640px){
+      .navbar{padding:12px 16px}
+      .filter-bar{display:none}
+      .search-box input{width:110px}
+      .hero-content{padding:0 1.2rem}
+      .categories{padding:0 1rem 4rem}
+      .detail-main{grid-template-columns:1fr}
+      .detail-body{padding:0 16px 40px}
+      .back-btn{top:70px;left:14px}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="logo" id="logo-btn">MIFLIX</span>
+    <div class="filter-bar">
+      <button class="fbtn active" data-filter="all">Todo</button>
+      <button class="fbtn" data-filter="Película">Películas</button>
+      <button class="fbtn" data-filter="Serie">Series</button>
+      <button class="fbtn" data-filter="mi-lista">Mi lista</button>
+      <button class="fbtn" data-filter="continuar">Continuar viendo</button>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+        <input id="search-input" type="text" placeholder="Buscar título, actor, género..."/>
+      </div>
+      <div class="search-preview" id="search-preview">
+        <div class="preview-header">Resultados</div>
+        <div id="preview-list"></div>
+      </div>
+    </div>
+    <div class="avatar">MF</div>
+  </div>
+</nav>
+
+<!-- CATÁLOGO -->
+<div id="catalog-view">
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="" alt="hero" id="hero-img"/>
+      <div class="hero-grad"></div>
+    </div>
+    <div class="hero-content">
+      <span class="hero-pill">Destacada</span>
+      <h1 class="hero-title" id="hero-title"></h1>
+      <div class="hero-meta">
+        <span class="hero-match" id="hero-match"></span>
+        <span class="hero-badge" id="hero-badge"></span>
+        <span class="hero-dur" id="hero-dur"></span>
+      </div>
+      <p class="hero-desc" id="hero-desc"></p>
+      <div class="hero-btns">
+        <button class="btn-red" id="hero-play-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          Reproducir
+        </button>
+        <button class="btn-ghost" id="hero-info-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Más info
+        </button>
+      </div>
+    </div>
+  </section>
+  <main id="categories" class="categories"></main>
+</div>
+
+<!-- DETALLE -->
+<div id="detail-view" class="detail-view">
+  <div class="detail-hero">
+    <img id="d-backdrop" src="" alt=""/>
+    <div class="detail-grad"></div>
+    <button class="back-btn" id="back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver
+    </button>
+    <div class="detail-hero-text">
+      <span class="type-pill-lg" id="d-type"></span>
+      <h1 class="detail-title" id="d-title"></h1>
+      <div class="detail-badges">
+        <span class="match-text" id="d-match"></span>
+        <span class="bdg" id="d-age"></span>
+        <span class="bdg-txt" id="d-year"></span>
+        <span class="bdg-txt" id="d-dur"></span>
+        <span class="bdg">HD</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+
+
+    <div class="player-wrap" id="player-wrap">
+      <button class="player-close" id="player-close-btn">✕ Cerrar reproductor</button>
+      <iframe id="player-frame" allowfullscreen allow="autoplay; fullscreen"></iframe>
+    </div>
+
+    <div class="detail-main">
+      <div>
+        <div class="detail-actions">
+          <button class="btn-red" id="btn-play-detail">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+            Reproducir
+          </button>
+          <button class="btn-lista" id="btn-mi-lista">
+            <span id="lista-icon">+</span> Mi lista
+          </button>
+        </div>
+        <p class="detail-desc" id="d-desc"></p>
+      </div>
+      <div>
+        <div class="rating-block">
+          <span class="rating-num" id="d-rating"></span>
+          <div>
+            <div class="rating-stars" id="d-stars"></div>
+            <div class="rating-label">IMDb</div>
+          </div>
+        </div>
+        <div class="meta-item"><span class="meta-label">Género</span><span class="meta-val" id="d-genres"></span></div>
+        <div class="meta-item"><span class="meta-label">Año</span><span class="meta-val" id="d-year2"></span></div>
+        <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-val" id="d-dur2"></span></div>
+        <div class="meta-item"><span class="meta-label">Actores</span><span class="meta-val" id="d-actors"></span></div>
+        <div class="meta-item"><span class="meta-label">Tags</span><div id="d-tags" class="tags-wrap"></div></div>
+      </div>
+    </div>
+
+    <p class="similar-title">Títulos similares</p>
+    <div class="similar-grid" id="similar-grid"></div>
+
+    <div class="eps-section" id="eps-section" style="display:none">
+      <p class="eps-title">Episodios</p>
+      <div id="eps-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const movies = [
+  {
+    id:1, title:"Interestelar", year:2014, genres:["Ciencia ficción","Drama"],
+    rating:8.7, age:"+13", duration:"2h 49min", match:"97%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg",
+    streamUrl:"https://hgplaycdn.com/e/2o88z0ec7fqi",
+    description:"Un equipo de exploradores viaja a través de un agujero de gusano en busca de un nuevo hogar para la humanidad.",
+    actors:["Matthew McConaughey","Anne Hathaway","Jessica Chastain"],
+    tags:["Épica","Emotiva","Científica"]
+  },
+
+  {
+    id:7, title:"Transformers: El lado oscuro de la luna", year:2011, genres:["Acción", "Ciencia ficción", "Aventura"],
+    rating:6.2, age:"+13", duration:"2h 34min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/fMqXNNgzTaxalU1ve9KevpELiGe.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/h3js4rulxzKMOokM2oO5Kr0mBZU.jpg",
+    streamUrl:"https://hgplaycdn.com/e/7v33wkie5hys",
+    description:"En esta tercera entrega de la saga Transformers, los Autobots y los Decepticons se ven envueltos en una peligrosa carrera espacial en la Tierra entre los EE.UU. y Rusia, donde un acontecimiento amenaza con provocar una guerra tan grande que ni los propios transformers puede que sean capaces de salva",
+    actors:["Shia LaBeouf", "Rosie Huntington-Whiteley", "Peter Cullen", "Leonard Nimoy", "John Turturro"],
+    tags:["Acción", "Ciencia ficción", "Aventura"]
+  },
+  {
+    id:8, title:"Scream 7", year:2026, genres:["Terror", "Misterio", "Crimen"],
+    rating:6, age:"+13", duration:"1h 54min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/jgJCp2TOtTMGWS766tQhNcuFhjs.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/hz7TdCrpLLt2Dz7S3PS2HG9rpAO.jpg",
+    streamUrl:"https://hgplaycdn.com/e/1k342lbbvemq",
+    description:"Cuando un nuevo asesino Ghostface aparece en el tranquilo pueblo donde Sidney Prescott ha construido una nueva vida, sus peores miedos se hacen realidad cuando su hija se convierte en el siguiente objetivo. Decidida a proteger a su familia, Sidney debe enfrentarse a los horrores de su pasado para po",
+    actors:["Neve Campbell", "Courteney Cox", "Isabel May", "Jasmin Savoy Brown", "Mason Gooding"],
+    tags:["Terror", "Misterio", "Crimen"]
+  },
+
+  {
+    id:10, title:"Los Vengadores", year:2012, genres:["Ciencia ficción", "Acción", "Aventura"],
+    rating:8, age:"+13", duration:"2h 22min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/ugX4WZJO3jEvTOerctAWJLinujo.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/9BBTo63ANSmhC4e6r62OJFuK2GL.jpg",
+    streamUrl:"https://hgplaycdn.com/e/zutk8f2uphot",
+    description:"Cuando un enemigo inesperado surge como una gran amenaza para la seguridad mundial, Nick Fury, director de la Agencia SHIELD, decide reclutar a un equipo para salvar al mundo de un desastre casi seguro.",
+    actors:["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo", "Chris Hemsworth", "Scarlett Johansson"],
+    tags:["Ciencia ficción", "Acción", "Aventura"]
+  },
+  {
+    id:11, title:"Avatar: Fuego y ceniza", year:2025, genres:["Ciencia ficción", "Aventura", "Fantasía"],
+    rating:7.3, age:"+13", duration:"3h 17min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/4n1U0Mwn7djux6VKNYDRWPgS2x6.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/iN41Ccw4DctL8npfmYg1j5Tr1eb.jpg",
+    streamUrl:"https://hgplaycdn.com/e/9v0848reg1md",
+    description:"Jake Sully y Neytiri enfrentan una nueva amenaza en Pandora: los Ash People, una tribu Na'vi violenta y sedienta de poder, liderada por la implacable Varang. Tras la devastadora guerra contra la RDA y la pérdida de su hijo mayor, la familia de Jake deberá luchar por su supervivencia y el futuro de P",
+    actors:["Sam Worthington", "Zoe Saldaña", "Sigourney Weaver", "Stephen Lang", "Oona Chaplin"],
+    tags:["Ciencia ficción", "Aventura", "Fantasía"]
+  },
+  {
+    id:12, title:"intensamente 2", year:2024, genres:["Animación", "Aventura", "Comedia", "Familia"],
+    rating:7.5, age:"+13", duration:"1h 36min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/lE3DCRI7bQgHSiIuEPcFiXpiuGV.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/p5ozvmdgsmbWe0H8Xk7Rc8SCwAB.jpg",
+    streamUrl:"https://hgplaycdn.com/e/z0xmal10v19h",
+    description:"Riley entra en la adolescencia y el Cuartel General de su cabeza sufre una repentina reforma para hacerle hueco a algo totalmente inesperado propio de la pubertad: ¡nuevas emociones! Alegría, Tristeza, Ira, Miedo y Asco, con años de impecable gestión a sus espaldas (según ellos...) no saben muy bien",
+    actors:["Amy Poehler", "Maya Hawke", "Kensington Tallman", "Liza Lapira", "Tony Hale"],
+    tags:["Animación", "Aventura", "Comedia"]
+  },
+  {
+    id:13, title:"Megalodón 2: La fosa", year:2023, genres:["Acción", "Ciencia ficción", "Terror"],
+    rating:6.4, age:"+13", duration:"1h 56min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/mBgynPDplmo5JTY9VfGqY35OjDu.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/zN41DPmPhwmgJjHwezALdrdvD0h.jpg",
+    streamUrl:"https://hgplaycdn.com/e/jtaq39tqckea",
+    description:"Una exploración submarina en las profundidades del océano se convierte en una espiral de caos cuando una malévola operación minera amenaza la misión y obliga al equipo de investigación a librar una arriesgada batalla por la supervivencia. Secuela de 'The Meg' (2018).",
+    actors:["Jason Statham", "吴京", "Shuya Sophia Cai", "Page Kennedy", "Sergio Peris-Mencheta"],
+    tags:["Acción", "Ciencia ficción", "Terror"]
+  },
+  {
+    id:15, title:"Vengadores: La era de Ultrón", year:2015, genres:["Acción", "Aventura", "Ciencia ficción"],
+    rating:7.3, age:"+13", duration:"2h 21min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/3Lz6h5rlCFNNyCZRaRJ2ZjtBnAE.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/kIBK5SKwgqIIuRKhhWrJn3XkbPq.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/yvpfvsdmvbnd",
+    description:"Cuando Tony Stark intenta reactivar un programa caído en desuso cuyo objetivo es mantener la paz, las cosas empiezan a torcerse y los héroes más poderosos de la Tierra, incluyendo a Iron Man, Capitán América, Thor, El Increíble Hulk, Viuda Negra y Ojo de Halcón, tendrán que afrontar la prueba defini",
+    actors:["Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo", "Chris Evans", "Scarlett Johansson"],
+    tags:["Acción", "Aventura", "Ciencia ficción"]
+  },
+  {
+    id:16, title:"Toy Story 3", year:2010, genres:["Animación", "Familia", "Comedia"],
+    rating:7.8, age:"+13", duration:"1h 40min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/yBSISwqix2z0JiwIrM3r6fiI6Cm.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/uAfhsySkr1UzQg1zdg3dZQRz9Fd.jpg",
+    streamUrl:"https://hgplaycdn.com/e/eqfpw8h9aoos",
+    description:"Sabiendo que su dueño Andy, que ya no es un niño, se prepara para ir a la universidad, el vaquero Woody, el astronauta Buzz y el resto de sus amigos juguetes comienzan a preocuparse ante su incierto futuro. Efectivamente todos acaban en una guardería, donde por ejemplo la muñeca Barbie conocerá al g",
+    actors:["Tom Hanks", "Tim Allen", "Joan Cusack", "Don Rickles", "Wallace Shawn"],
+    tags:["Animación", "Familia", "Comedia"]
+  },
+  {
+    id:17, title:"Coco", year:2017, genres:["Familia", "Animación", "Música", "Aventura"],
+    rating:8.2, age:"+13", duration:"1h 49min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/vwsFGblLYxWBNjg9pdWN1Mm5YfW.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/g7CHF8gTLGooTbP4GznIGwaqAGL.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/dwnzwycbta4k",
+    description:"Un joven aspirante a músico llamado Miguel se embarca en un viaje extraordinario a la mágica tierra de sus ancestros. Allí, el encantador embaucador Héctor se convierte en su inesperado amigo y le ayuda a descubrir los misterios detrás de las historias y tradiciones de su familia.",
+    actors:["Anthony Gonzalez", "Gael García Bernal", "Benjamin Bratt", "Alanna Ubach", "Renée Victor"],
+    tags:["Familia", "Animación", "Música"]
+  },
+  {
+    id:18, title:"Spider-Man: Cruzando el Multiverso", year:2023, genres:["Animación", "Acción", "Aventura", "Ciencia ficción"],
+    rating:8.3, age:"+13", duration:"2h 20min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/37WcNMgNOMxdhT87MFl7tq7FM1.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/9xfDWXAUbFXQK585JvByT5pEAhe.jpg",
+    streamUrl:"https://hgplaycdn.com/e/kmhvjbuh398f",
+    description:"Tras reencontrarse con Gwen Stacy, el amigable vecindario de Spider-Man de Brooklyn al completo es catapultado a través del Multiverso, donde se encuentra con un equipo de Spidermans encargados de proteger su propia existencia. Pero cuando los héroes se enfrentan sobre cómo manejar una nueva amenaza",
+    actors:["Shameik Moore", "Hailee Steinfeld", "Brian Tyree Henry", "Luna Lauren Vélez", "Jake Johnson"],
+    tags:["Animación", "Acción", "Aventura"]
+  },
+  {
+    id:19, title:"Zootrópolis 2", year:2025, genres:["Animación", "Comedia", "Aventura", "Familia", "Misterio"],
+    rating:7.6, age:"+13", duration:"1h 47min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/4fRdfQPjHiuDSkzaxFAV44k7Iem.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/lgotja3xMoJZbynwHfcQcJAEMWH.jpg",
+    streamUrl:"https://hgplaycdn.com/e/e92z1eid7mr4",
+    description:"Después de resolver el caso más importante en la historia de Zootrópolis, los policías novatos Judy Hopps y Nick Wilde descubren que su asociación no es tan sólida como pensaban cuando el Jefe Bogo les ordena unirse al programa de consejería \"Compañeros en Crisis\". Pero no pasa mucho tiempo para que",
+    actors:["Ginnifer Goodwin", "Jason Bateman", "Ke Huy Quan", "Fortune Feimster", "Andy Samberg"],
+    tags:["Animación", "Comedia", "Aventura"]
+  },
+  {
+    id:20, title:"Shrek", year:2001, genres:["Animación", "Comedia", "Fantasía", "Aventura", "Familia"],
+    rating:7.8, age:"+13", duration:"1h 32min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/jTQONM7jt1yv2lL972TtmWO0UIZ.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/40Wtp7kMG6mZ4d5T1jfrd8qrvD4.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/kh7ursfjwk0p",
+    description:"Hace mucho, mucho tiempo, en una lejanísima ciénaga vivía un intratable ogro llamado Shrek. Pero de repente, un día, su absoluta soledad se ve interrumpida por una invasión de sorprendentes personajes de cuento. Hay ratoncitos ciegos en su comida, un enorme y malísimo lobo en su cama, tres cerditos ",
+    actors:["Mike Myers", "Eddie Murphy", "Cameron Diaz", "John Lithgow", "Vincent Cassel"],
+    tags:["Animación", "Comedia", "Fantasía"]
+  },
+  {
+    id:21, title:"Capitán América: Civil War", year:2016, genres:["Aventura", "Acción", "Ciencia ficción"],
+    rating:7.4, age:"+13", duration:"2h 27min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/jPPy7tCfglppQo6J9nGwU6UmJ8X.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/dLWoJnYXhFeNouon4NmBLAr92rf.jpg",
+    streamUrl:"https://hanerix.com/e/r4f1p8ch71mx",
+    description:"Continúa la historia de “Avengers: Age of Ultron”, con Steve Rogers liderando un nuevo equipo de Vengadores en su esfuerzo por proteger a la humanidad. Tras otro incidente internacional relacionado con los Vengadores que ocasiona daños colaterales, la presión política fuerza a crear un sistema de re",
+    actors:["Chris Evans", "Robert Downey Jr.", "Scarlett Johansson", "Sebastian Stan", "Anthony Mackie"],
+    tags:["Aventura", "Acción", "Ciencia ficción"]
+  },{
+    id:22, title:"Son Como Niños", year:2010, genres:["Comedia"],
+    rating:6.4, age:"+13", duration:"1h 42min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/r1mDA1SLjw2yiYhhLiAjrd2Pt1l.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/kARonxQpuSZdFraTKlCThWOBCtu.jpg",
+    streamUrl:"https://hgplaycdn.com/e/x4r3qc1a0muf",
+    description:"Después de muchos años, su antiguo entrenador de basquet muere y cincos amigos deciden pasar un fin de semanas -ahora con sus respectivas familias- en la casa donde celebraron, antaño, el campeonato.",
+    actors:["Adam Sandler", "Kevin James", "Chris Rock", "David Spade", "Rob Schneider"],
+    tags:["Comedia"]
+  },
+  {
+    id:23, title:"Son Como Niños 2", year:2013, genres:["Comedia"],
+    rating:6.1, age:"+13", duration:"1h 40min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/6TRhV0E6wDQjMEtvYru0Kel6juW.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/7JhsJxNmdW0y4IyNrHy10cECrAz.jpg",
+    streamUrl:"https://hgplaycdn.com/e/qvm69qmwozul",
+    description:"Lenny se ha trasladado con su familia a la pequeña ciudad donde tanto él como sus amigos se criaron. En esta ocasión, los adultos serán quienes reciban toda una lección de sus propios hijos.",
+    actors:["Adam Sandler", "Kevin James", "Chris Rock", "David Spade", "Salma Hayek Pinault"],
+    tags:["Comedia"]
+  },
+  {
+    id:24, title:"Super Mario Bros. La película", year:2023, genres:["Familia", "Comedia", "Aventura", "Animación", "Fantasía"],
+    rating:7.6, age:"+13", duration:"1h 32min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/k36QyeVsy851npTUQL08jO8hqip.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/9n2tJBplPbgR2ca05hS5CKXwP2c.jpg",
+    streamUrl:"https://hgplaycdn.com/e/jtarcwn364rb",
+    description:"Mientras trabajan en una avería subterránea, los fontaneros de Brooklyn, Mario y su hermano Luigi, viajan por una misteriosa tubería hasta un nuevo mundo mágico. Pero, cuando los hermanos se separan, Mario deberá emprender una épica misión para encontrar a Luigi. Con la ayuda del champiñón local Toa",
+    actors:["Chris Pratt", "Anya Taylor-Joy", "Charlie Day", "Jack Black", "Keegan-Michael Key"],
+    tags:["Familia", "Comedia", "Aventura"]
+  },
+  {
+    id:25, title:"Toy Story 4", year:2019, genres:["Familia", "Comedia", "Animación", "Aventura"],
+    rating:7.5, age:"+13", duration:"1h 30min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/yF1vPDuHVrAUMX5dy1tVMbAjkEL.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/q62bpQ67qaXY0u6b2wFEnQYIbPd.jpg",
+    streamUrl:"https://hgplaycdn.com/e/25f1iod06bsp",
+    description:"Woody siempre ha tenido claro cuál es su labor en el mundo y cuál es su prioridad: cuidar a su dueño, ya sea Andy o Bonnie. Sin embargo, Woody descubrirá lo grande que puede ser el mundo para un juguete cuando Forky se convierta en su nuevo compañero de habitación. Los juguetes se embarcarán en una ",
+    actors:["Tom Hanks", "Tim Allen", "Annie Potts", "Tony Hale", "Keegan-Michael Key"],
+    tags:["Familia", "Comedia", "Animación"]
+  },
+  {
+    id:26, title:"Daredevil: Born Again", year:2025, genres:["Drama", "Action & Adventure", "Crimen"],
+    rating:8, age:"+13", duration:"0min por ep.", match:"95%", type:"Serie",
+    poster:"https://image.tmdb.org/t/p/w500/zNH50kOA5Zm5QSFqeIu3hJGuNdO.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/qrTAc0ZtQ859Qu5O8cixJzNJpQs.jpg",
+    streamUrl:"https://hgplaycdn.com/e/2kbma0b89xdr",
+    description:"Matt Murdock, un abogado ciego con habilidades super desarrolladas lucha por la justicia desde su ajetreado bufete mientras el antiguo jefe mafioso Wilson Fisk emprende una carrera política en Nueva York. Cuando sus identidades pasadas empiezan a salir a la luz, ambos se ven abocados a un enfrentami",
+    actors:["Charlie Cox", "Vincent D'Onofrio", "Wilson Bethel", "Deborah Ann Woll", "Margarita Levieva"],
+    tags:["Drama", "Action & Adventure", "Crimen"],
+    episodios:[
+      {temporada:1,episodio:1,titulo:"Episodio 1",streamUrl:"https://hgplaycdn.com/e/2kbma0b89xdr"},
+      {temporada:1,episodio:2,titulo:"Episodio 2",streamUrl:"https://hgplaycdn.com/e/d0d0iw1gouhk"},
+      {temporada:1,episodio:3,titulo:"Episodio 3",streamUrl:"https://hgplaycdn.com/e/9ko433b4pxd7"},
+      {temporada:1,episodio:4,titulo:"Episodio 4",streamUrl:"https://hgplaycdn.com/e/yaioenfwc9mw"}
+    ]
+  },
+  {
+    id:27, title:"Creed 2: Defendiendo el Legado", year:2018, genres:["Drama", "Acción"],
+    rating:7, age:"+13", duration:"2h 10min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/2t53WEu1Ck7qAMS3theMnQK2N2c.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/9il7qNbeYnPMYlutsVYDsj4hRyb.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/0vyabost59s8",
+    description:"Adonis Creed se debate entre las obligaciones personales y el entrenamiento para su próxima gran pelea, con el desafío de su vida por delante. Enfrentarse a un oponente que tiene vínculos con el pasado de su familia solo intensifica su inminente batalla en el ring. Afortunadamente Rocky Balboa está ",
+    actors:["Michael B. Jordan", "Sylvester Stallone", "Tessa Thompson", "Wood Harris", "Russell Hornsby"],
+    tags:["Drama", "Acción"]
+  },
+  {
+    id:28, title:"Creed. Corazón de campeón", year:2015, genres:["Drama"],
+    rating:7.4, age:"+13", duration:"2h 13min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/fTdozSSr2cTZcioldjfVUbBzhrW.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/kODNw6GJNdgldUMEhKPlCw8wQCr.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/xgk0r4cykwb3",
+    description:"Adonis Johnson no llego a conocer a su padre, el campeón del mundo de los pesos pesados Apollo Creed, que falleció antes de que él naciera. Sin embargo, nadie puede negar que lleva el boxeo en la sangre, por lo que pone rumbo a Filadelfia, el lugar en el que se celebró el legendario combate entre su",
+    actors:["Michael B. Jordan", "Sylvester Stallone", "Tessa Thompson", "Phylicia Rashād", "Andre Ward"],
+    tags:["Drama"]
+  },
+  {
+    id:29, title:"Creed III", year:2023, genres:["Drama", "Acción"],
+    rating:7.1, age:"+13", duration:"1h 57min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/fcFMd3HdyX7r5gtFwVnn2qr5Yhq.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/ycO5QdrnVI90KaPhfnQI9OgRJlp.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/y8koawc4t9xf",
+    description:"Después de dominar el mundo del boxeo, Adonis Creed ha prosperado tanto en su carrera como en su vida familiar. Cuando un amigo de la infancia y ex prodigio de boxeo, Damien Anderson, resurge después de cumplir una larga sentencia en prisión, está ansioso por demostrar que merece su disparo en el ri",
+    actors:["Michael B. Jordan", "Tessa Thompson", "Jonathan Majors", "Phylicia Rashād", "Mila Davis-Kent"],
+    tags:["Drama", "Acción"]
+  },
+  {
+    id:30, title:"Capitán América: El Primer Vengador", year:2011, genres:["Acción", "Aventura", "Ciencia ficción"],
+    rating:7, age:"+13", duration:"2h 4min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/i5eSA5DK5iAv53SB4yv57bN56o6.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/yFuKvT4Vm3sKHdFY4eG6I4ldAnn.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/xd3xsb7oqy5e",
+    description:"Nacido durante la Gran Depresión, Steve Rogers creció como un chico enclenque en una familia pobre. Horrorizado por las noticias que llegaban de Europa sobre los nazis, decidió enrolarse en el ejército; sin embargo, debido a su precaria salud, fue rechazado una y otra vez. Enternecido por sus súplic",
+    actors:["Chris Evans", "Hayley Atwell", "Sebastian Stan", "Tommy Lee Jones", "Hugo Weaving"],
+    tags:["Acción", "Aventura", "Ciencia ficción"]
+  },
+  {
+    id:31, title:"Capitán América y el Soldado del Invierno", year:2014, genres:["Acción", "Aventura", "Ciencia ficción"],
+    rating:7.7, age:"+13", duration:"2h 16min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/3Zv12uAqBxj4xAdeHeVySEQzY1o.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/1RWLMyC9KcFfcaoViMiJGSSZzzr.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/a98dkczucpo6",
+    description:"Capitán América, Viuda Negra y un nuevo aliado, Falcon, se enfrentan a un enemigo inesperado mientras intentan sacar a la luz una conspiración que pone en riesgo al mundo.",
+    actors:["Chris Evans", "Samuel L. Jackson", "Scarlett Johansson", "Robert Redford", "Sebastian Stan"],
+    tags:["Acción", "Aventura", "Ciencia ficción"]
+  },
+  {
+    id:32, title:"el dia del fin del mundo", year:2020, genres:["Acción", "Aventura", "Suspense", "Ciencia ficción"],
+    rating:7.1, age:"+13", duration:"2h 0min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/9iFkwShRf5M29yLABAdsEZyr9w6.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/uorMP2U1F0AfogYMz4lYu2EbgYo.jpg",
+    streamUrl:"https://hgplaycdn.com/e/pwqmowy7l5pi",
+    description:"Cuando el mundo es consciente de que el asteroide más grande de la historia va a impactar en la Tierra y aniquilar todo rastro de vida, los gobiernos de todo el mundo realizan un sorteo en el cual los afortunados podrán sobrevivir en refugios secretos. Esta decisión desata un caos a nivel mundial. M",
+    actors:["Gerard Butler", "Morena Baccarin", "David Denman", "Hope Davis", "Roger Dale Floyd"],
+    tags:["Acción", "Aventura", "Suspense"]
+  },
+  {
+    id:33, title:"Ant-Man y la Avispa: Quantumanía", year:2023, genres:["Acción", "Aventura", "Ciencia ficción"],
+    rating:6.2, age:"+13", duration:"2h 5min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/lKHy0ntGPdQeFwvNq8gK1D0anEr.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/m8JTwHFwX7I7JY5fPe4SjqejWag.jpg",
+    streamUrl:"https://hgplaycdn.com/e/935cyiagxqyy",
+    description:"La pareja de superhéroes Scott Lang y Hope van Dyne regresa para continuar sus aventuras como Ant-Man y la Avispa. Los dos, junto a los padres de Hope, Hank Pym y Janet van Dyne y la hija de Scott, Cassie Lang, se dedican a explorar el Mundo Cuántico, interactuando con nuevas y extrañas criaturas y ",
+    actors:["Paul Rudd", "Evangeline Lilly", "Michael Douglas", "Michelle Pfeiffer", "Jonathan Majors"],
+    tags:["Acción", "Aventura", "Ciencia ficción"]
+  },
+  {
+    id:22, title:"Los Simpson", year:1989, genres:["Familia", "Animación", "Comedia"],
+    rating:8, age:"+13", duration:"0min por ep.", match:"95%", type:"Serie",
+    poster:"https://image.tmdb.org/t/p/w500/9hmoEmntaYrrlb4HKSFisWUQnqy.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/jIArNHIekrCSVgdMbKPAXpPY03Y.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/n3bg4ebh14af",
+    description:"El día a día de una peculiar familia formada por Homer, Marge, Bart, Maggie y Lisa Simpson y otros divertidos personajes de la localidad norteamericana de Springfield. Homer, el padre, es un desastroso inspector de seguridad de una central nuclear. Marge, la madre, es un ama de casa acostumbrada a s",
+    actors:["Dan Castellaneta", "Julie Kavner", "Nancy Cartwright", "Yeardley Smith", "Hank Azaria"],
+    tags:["Familia", "Animación", "Comedia"],
+    episodios:[
+      {temporada:1,episodio:1,titulo:"Episodio 1",streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/n3bg4ebh14af"},
+      {temporada:1,episodio:2,titulo:"Episodio 2",streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/wvaislkzara9"},
+      {temporada:1,episodio:3,titulo:"Episodio 3",streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/oqgid316jvi1"}
+    ]
+  },
+  {
+    id:34, title:"Proyecto Fin del Mundo", year:2026, genres:["Ciencia ficción", "Aventura"],
+    rating:8.2, age:"+13", duration:"2h 37min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/7lwOTxajURKEWO6gI370NTrVdBO.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/8Tfys3mDZVp4tNoH2ktm06a0Tau.jpg",
+    streamUrl:"https://hgplaycdn.com/e/rog0niwpw5j1",
+    description:"El profesor de ciencias Ryland Grace se despierta en una nave espacial a años luz de casa sin recordar quién es ni cómo ha llegado hasta allí. A medida que recupera la memoria, empieza a descubrir su misión: resolver el enigma de la misteriosa sustancia que provoca la extinción del sol. Deberá recur",
+    actors:["Ryan Gosling", "James Ortiz", "Sandra Hüller", "Lionel Boyce", "Milana Vayntrub"],
+    tags:["Ciencia ficción", "Aventura"]
+  },
+  {
+    id:35, title:"इक्कीस", year:2026, genres:["Historia", "Bélica", "Drama"],
+    rating:6, age:"+13", duration:"2h 28min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/8PWu0V10nMqG5SrA13wLRXTD2fH.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/wbhoYwvqgadchfMgUOfOp87QZDS.jpg",
+    streamUrl:"https://hgplaycdn.com/e/jple7z01l95m",
+    description:"Sin descripción.",
+    actors:["Dharmendra", "Jaideep Ahlawat", "Agastya Nanda", "Simar Bhatia", "Shree Bishnoi"],
+    tags:["Historia", "Bélica", "Drama"]
+  },
+  {
+    id:36, title:"La pasión de Cristo", year:2004, genres:["Drama"],
+    rating:7.5, age:"+13", duration:"2h 6min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/qPSyfz3yzTHXh1s8KRNy5YMNQJL.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/4840rkbpsiuow5ew155oVKcqJwj.jpg",
+    streamUrl:"https://hgplaycdn.com/e/26rx2m79n8c2",
+    description:"Año 33 de nuestra era. En la provincia romana de Judea, un misterioso carpintero llamado Jesús de Nazareth comienza a anunciar la llegada del \"reino de Dios\" y se rodea de un grupo de humildes pescadores: los Apóstoles. Durante siglos, el pueblo judío había esperado la llegada del Mesías - personaje",
+    actors:["Jim Caviezel", "Maia Morgenstern", "Christo Jivkov", "Francesco De Vito", "Monica Bellucci"],
+    tags:["Drama"]
+  },
+  {
+    id:37, title:"Apocalypto", year:2006, genres:["Acción", "Drama", "Historia"],
+    rating:7.6, age:"+13", duration:"2h 16min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/yQ4uC13IYVerbxMMXeSogSQUkOT.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/nnmbJvYyDS1VkMOCbxSpdBi3WbJ.jpg",
+    streamUrl:"https://hgplaycdn.com/e/we5g5ltw5lsm",
+    description:"Historia ambientada en la época del imperio maya. Cuando la idílica existencia de los mayas es brutalmente interrumpida por el ataque de una fuerza invasora, un hombre emprende un arriesgado viaje a un mundo regido por el miedo y la opresión en el que le espera un incierto final. Debido a un giro de",
+    actors:["Rudy Youngblood", "Raoul Max Trujillo", "Gerardo Taracena", "Iazua Larios", "Antonio Monroy"],
+    tags:["Acción", "Drama", "Historia"]
+  },
+  {
+    id:38, title:"A Southern Haunting", year:2023, genres:["Terror", "Suspense"],
+    rating:5.9, age:"+13", duration:"1h 33min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/4S0w1oII4PQHMnLb4L4aB3Ij4ip.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/plNPAK4KRgMZjRQh13RfJ6qFrVu.jpg",
+    streamUrl:"https://hgplaycdn.com/e/hgcwxrljxfba",
+    description:"Después de recibir 40 acres, una familia de ex esclavos lucha contra el hombre y el mito para descubrir la verdad detrás de su tierra.",
+    actors:["Imani Hakim", "Tarik Lowe", "Laya DeLeon Hayes", "Jaden Newton", "Jelani Talib"],
+    tags:["Terror", "Suspense"]
+  },
+  {
+    id:39, title:"Caminos del crimen", year:2026, genres:["Crimen", "Suspense"],
+    rating:7, age:"+13", duration:"2h 21min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/oUF0tTmbwlfkhiYSU5nXJccr5K0.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/kKF4gEiBDArhONlCcunHVgBp3bA.jpg",
+    streamUrl:"https://callistanise.com/v/vqftu9h3o1rm",
+    description:"Davis es un escurridizo ladrón cuyos atracos de alto riesgo tienen desconcertada a la policía. Davis está planeando su mayor golpe, con la esperanza de que sea el último, cuando se cruza en su camino Sharon, una desilusionada ejecutiva de seguros con la que se ve obligado a trabajar, y Orman un ladr",
+    actors:["Chris Hemsworth", "Mark Ruffalo", "Halle Berry", "Barry Keoghan", "Monica Barbaro"],
+    tags:["Crimen", "Suspense"]
+  },
+  {
+    id:40, title:"Sisu", year:2022, genres:["Acción", "Bélica", "Suspense"],
+    rating:7.4, age:"+13", duration:"1h 31min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/iaKee6RBwx7UxgZt7PWQUAAkaG7.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/pBdQ4iorzRV2G38mdS6rzrmUfMA.jpg",
+    streamUrl:"https://teomovie.web.app/iframe.html?url=https://hgplaycdn.com/e/siexn1fipbti",
+    description:"En lo profundo de la naturaleza salvaje de Laponia, Aatami Korpi está buscando oro, pero después de tropezar con una patrulla nazi, comienza una persecución impresionante y hambrienta de oro a través de la naturaleza salvaje de Laponia destruida y minada.",
+    actors:["Jorma Tommila", "Aksel Hennie", "Jack Doolan", "Mimosa Willamo", "Onni Tommila"],
+    tags:["Acción", "Bélica", "Suspense"]
+  },
+  {
+    id:41, title:"Sisu: Camino a la venganza", year:2025, genres:["Acción", "Bélica"],
+    rating:7.3, age:"+13", duration:"1h 29min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/qQyc6t9dHS5dlIUt3ccCQnRIAc1.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/yCatt8lmp3oRFEcOZF8KHhsiASQ.jpg",
+    streamUrl:"https://hgplaycdn.com/e/osmvybawrsst",
+    description:"Al regresar a la casa donde su familia fue brutalmente asesinada durante la guerra, «el hombre que se niega a morir» la desmantela, la carga en un camión y se propone reconstruirla en un lugar seguro en honor a ellos. Cuando el comandante del Ejército Rojo que mató a su familia regresa empeñado en t",
+    actors:["Jorma Tommila", "Stephen Lang", "Richard Brake", "Tommi Korpela", "Kaspar Velberg"],
+    tags:["Acción", "Bélica"]
+  },
+  {
+    id:42, title:"Hoppers: Operación castor", year:2026, genres:["Animación", "Familia", "Ciencia ficción", "Aventura", "Comedia"],
+    rating:7.6, age:"+13", duration:"1h 45min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/4Z0E1W7YvQ0aVtgj7KKtktb9ukd.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/u53UYu5XG2hNgWGvs3xGhAVzypl.jpg",
+    streamUrl:"https://hgplaycdn.com/e/1kebq2fil0pl",
+    description:"Una amante de los animales aprovecha la oportunidad de utilizar una tecnología que coloca su conciencia en un castor robótico, descubriendo misterios dentro del mundo animal que van más allá de lo que podría haber imaginado.",
+    actors:["Piper Curda", "Bobby Moynihan", "Jon Hamm", "Kathy Najimy", "Dave Franco"],
+    tags:["Animación", "Familia", "Ciencia ficción"]
+  },
+  {
+    id:43, title:"Dimensionales", year:2025, genres:["Drama", "Suspense", "Misterio"],
+    rating:5.3, age:"+13", duration:"0h 0min", match:"95%", type:"Película",
+    poster:"https://image.tmdb.org/t/p/w500/vb8wrZlqFXswqranjjSi0w816kl.jpg",
+    backdrop:"https://image.tmdb.org/t/p/w1280/Ab4CjXeleZSBTtKFz17ax0UU400.jpg",
+    streamUrl:"https://hgplaycdn.com/e/qcec5353s782",
+    description:"Sin descripción.",
+    actors:["Nailea Norvind", "Francisco Rubio", "Rocío García", "Eduardo Tanús", "Paulina Olvera"],
+    tags:["Drama", "Suspense", "Misterio"]
+  }
+];
+
+let currentFilter = "all";
+let currentMovie = null;
+
+function getFiltered() {
+  return currentFilter === "all" ? movies : movies.filter(m => m.type === currentFilter);
+}
+
+function groupByGenre(list) {
+  const map = new Map();
+  map.set("Todos", list);
+  list.forEach(m => m.genres.forEach(g => {
+    if (!map.has(g)) map.set(g, []);
+    map.get(g).push(m);
+  }));
+  const result = [];
+  map.forEach((ms, name) => { if (ms.length > 0) result.push({ name, movies: ms }); });
+  return result;
+}
+
+function stars(r) {
+  const f = Math.round(r / 2);
+  return "★".repeat(f) + "☆".repeat(5 - f);
+}
+
+function createCard(movie) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-img-wrap">
+      <img src="${movie.poster}" alt="${movie.title}" loading="lazy"
+        onerror="this.src='https://via.placeholder.com/300x450/111/444?text=?'"/>
+      <div class="card-overlay">
+        <div class="play-circle">
+          <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <span class="card-star">★ ${movie.rating}</span>
+      </div>
+      <span class="type-pill">${movie.type}</span>
+    </div>
+    <div class="card-info">
+      <p class="card-name">${movie.title}</p>
+      <p class="card-sub">${movie.year} · ${movie.genres[0]}</p>
+    </div>`;
+  card.addEventListener("click", () => openDetail(movie));
+  return card;
+}
+
+function createSimCard(movie) {
+  const card = document.createElement("div");
+  card.className = "sim-card";
+  card.innerHTML = `
+    <img src="${movie.poster}" alt="${movie.title}" loading="lazy"/>
+    <div class="sim-info">
+      <p class="sim-title">${movie.title}</p>
+      <p class="sim-sub">${movie.year} · ${movie.genres[0]}</p>
+    </div>`;
+  card.addEventListener("click", () => openDetail(movie));
+  return card;
+}
+
+function openDetail(movie) {
+  currentMovie = movie;
+  document.getElementById("catalog-view").style.display = "none";
+  document.getElementById("detail-view").style.display = "flex";
+
+  document.getElementById("d-backdrop").src = movie.backdrop;
+  document.getElementById("d-type").textContent = movie.type;
+  document.getElementById("d-title").textContent = movie.title;
+  document.getElementById("d-match").textContent = movie.match + " relevante";
+  document.getElementById("d-age").textContent = movie.age;
+  document.getElementById("d-year").textContent = movie.year;
+  document.getElementById("d-dur").textContent = movie.duration;
+  document.getElementById("d-desc").textContent = movie.description;
+  document.getElementById("d-rating").textContent = "★ " + movie.rating;
+  document.getElementById("d-stars").textContent = stars(movie.rating);
+  document.getElementById("d-genres").textContent = movie.genres.join(" / ");
+  document.getElementById("d-year2").textContent = movie.year;
+  document.getElementById("d-dur2").textContent = movie.duration;
+  document.getElementById("d-actors").textContent = movie.actors.join(", ");
+  document.getElementById("d-tags").innerHTML = movie.tags.map(t => `<span class="meta-tag">${t}</span>`).join("");
+
+  closePlayer();
+  actualizarBtnLista(movie.id);
+
+  // Episodios
+  const epsSection = document.getElementById("eps-section");
+  const epsList = document.getElementById("eps-list");
+  epsList.innerHTML = "";
+
+  if (movie.type === "Serie" && movie.episodios && movie.episodios.length > 0) {
+    epsSection.style.display = "block";
+
+    const temporadas = {};
+    movie.episodios.forEach(ep => {
+      if (!temporadas[ep.temporada]) temporadas[ep.temporada] = [];
+      temporadas[ep.temporada].push(ep);
+    });
+    const tempNums = Object.keys(temporadas).sort((a,b) => a-b);
+
+    // Tabs de temporadas
+    const tabsWrap = document.createElement("div");
+    tabsWrap.className = "temp-tabs";
+    tempNums.forEach((t, i) => {
+      const tab = document.createElement("button");
+      tab.className = "temp-tab" + (i === 0 ? " active" : "");
+      tab.textContent = tempNums.length === 1 ? "Episodios" : `Temporada ${t}`;
+      tab.addEventListener("click", () => {
+        tabsWrap.querySelectorAll(".temp-tab").forEach(b => b.classList.remove("active"));
+        tab.classList.add("active");
+        renderEps(t);
+      });
+      tabsWrap.appendChild(tab);
+    });
+
+    const epsGrid = document.createElement("div");
+    epsGrid.id = "eps-grid";
+
+    function renderEps(t) {
+      epsGrid.innerHTML = "";
+      temporadas[t].forEach(ep => {
+        const item = document.createElement("div");
+        item.className = "ep-item";
+        item.innerHTML = `
+          <div class="ep-num">${ep.episodio}</div>
+          <div class="ep-info">
+            <p class="ep-titulo">${ep.titulo}</p>
+            <p class="ep-sub">T${ep.temporada} · Ep. ${ep.episodio}</p>
+          </div>
+          <div class="ep-play">
+            <svg viewBox="0 0 24 24" fill="white" width="12" height="12"><path d="M8 5v14l11-7z"/></svg>
+          </div>`;
+        item.addEventListener("click", () => {
+          epsGrid.querySelectorAll(".ep-item").forEach(i => i.classList.remove("playing"));
+          item.classList.add("playing");
+          const wrap = document.getElementById("player-wrap");
+          document.getElementById("player-frame").src = ep.streamUrl;
+          wrap.style.display = "block";
+          marcarContinuar(movie);
+          wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        epsGrid.appendChild(item);
+      });
+    }
+
+    renderEps(tempNums[0]);
+    epsList.appendChild(tabsWrap);
+    epsList.appendChild(epsGrid);
+
+  } else {
+    epsSection.style.display = "none";
+  }
+
+  const simGrid = document.getElementById("similar-grid");
+  simGrid.innerHTML = "";
+  movies
+    .filter(m => m.id !== movie.id && m.genres.some(g => movie.genres.includes(g)))
+    .slice(0, 4)
+    .forEach(m => simGrid.appendChild(createSimCard(m)));
+
+  window.scrollTo(0, 0);
+}
+
+function playMovie() {
+  if (!currentMovie) return;
+  marcarContinuar(currentMovie);
+  const wrap = document.getElementById("player-wrap");
+  document.getElementById("player-frame").src = currentMovie.streamUrl;
+  wrap.style.display = "block";
+  wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closePlayer() {
+  document.getElementById("player-wrap").style.display = "none";
+  document.getElementById("player-frame").src = "";
+}
+
+function showCatalog() {
+  document.getElementById("catalog-view").style.display = "block";
+  document.getElementById("detail-view").style.display = "none";
+  closePlayer();
+  currentMovie = null;
+}
+
+// ── MI LISTA & CONTINUAR VIENDO ──────────────────────────────
+
+function getMiLista() {
+  return JSON.parse(localStorage.getItem("miflix_lista") || "[]");
+}
+function setMiLista(ids) {
+  localStorage.setItem("miflix_lista", JSON.stringify(ids));
+}
+function getContinuar() {
+  return JSON.parse(localStorage.getItem("miflix_continuar") || "{}");
+}
+function setContinuar(data) {
+  localStorage.setItem("miflix_continuar", JSON.stringify(data));
+}
+
+function estaEnLista(id) {
+  return getMiLista().includes(id);
+}
+
+function toggleLista(movie) {
+  let lista = getMiLista();
+  if (lista.includes(movie.id)) {
+    lista = lista.filter(i => i !== movie.id);
+  } else {
+    lista.push(movie.id);
+  }
+  setMiLista(lista);
+  actualizarBtnLista(movie.id);
+}
+
+function actualizarBtnLista(id) {
+  const btn = document.getElementById("btn-mi-lista");
+  const icon = document.getElementById("lista-icon");
+  if (!btn) return;
+  if (estaEnLista(id)) {
+    btn.classList.add("en-lista");
+    icon.textContent = "✓";
+    btn.title = "Quitar de mi lista";
+  } else {
+    btn.classList.remove("en-lista");
+    icon.textContent = "+";
+    btn.title = "Agregar a mi lista";
+  }
+}
+
+function marcarContinuar(movie) {
+  const data = getContinuar();
+  data[movie.id] = { id: movie.id, timestamp: Date.now() };
+  setContinuar(data);
+}
+
+function makeSection(title, moviesList) {
+  const section = document.createElement("section");
+  section.className = "cat-section";
+
+  const grid = document.createElement("div");
+  grid.className = "movies-grid";
+  moviesList.forEach(m => grid.appendChild(createCard(m)));
+
+  const header = document.createElement("div");
+  header.className = "cat-header";
+  header.innerHTML = `
+    <h2 class="cat-title">${title}</h2>
+    <div class="cat-arrows">
+      <button class="cat-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="cat-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>`;
+
+  const arrows = header.querySelectorAll(".cat-arrow");
+  arrows[0].addEventListener("click", () => grid.scrollBy({ left: -500, behavior: "smooth" }));
+  arrows[1].addEventListener("click", () => grid.scrollBy({ left: 500, behavior: "smooth" }));
+
+  section.appendChild(header);
+  section.appendChild(grid);
+  return section;
+}
+
+// ── RENDER CATALOG ────────────────────────────────────────────
+function renderCatalog() {
+  const container = document.getElementById("categories");
+  container.innerHTML = "";
+
+  if (currentFilter === "mi-lista") {
+    const lista = getMiLista();
+    const listMovies = movies.filter(m => lista.includes(m.id));
+    const section = makeSection("Mi lista", listMovies);
+    if (listMovies.length === 0) section.querySelector(".movies-grid").innerHTML = `<p style="color:#555;padding:1rem 0;font-size:14px">Tu lista está vacía.</p>`;
+    container.appendChild(section);
+    return;
+  }
+
+  if (currentFilter === "continuar") {
+    const continuar = getContinuar();
+    const contMovies = Object.values(continuar)
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map(c => movies.find(m => m.id === c.id))
+      .filter(Boolean);
+    const section = makeSection("Continuar viendo", contMovies);
+    if (contMovies.length === 0) section.querySelector(".movies-grid").innerHTML = `<p style="color:#555;padding:1rem 0;font-size:14px">Todavía no empezaste a ver nada.</p>`;
+    container.appendChild(section);
+    return;
+  }
+
+  groupByGenre(getFiltered()).forEach(group => {
+    if (group.movies.length === 0) return;
+    container.appendChild(makeSection(group.name, group.movies));
+  });
+}
+
+// Init
+renderCatalog();
+
+// Filters
+document.querySelectorAll(".fbtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    // Siempre vuelve al catálogo sin importar dónde estés
+    document.getElementById("catalog-view").style.display = "block";
+    document.getElementById("detail-view").style.display = "none";
+    closePlayer();
+    currentMovie = null;
+    renderCatalog();
+    window.scrollTo(0, 0);
+  });
+});
+
+// Search preview
+const searchInput = document.getElementById("search-input");
+const searchPreview = document.getElementById("search-preview");
+const previewList = document.getElementById("preview-list");
+
+searchInput.addEventListener("input", function() {
+  const q = this.value.toLowerCase().trim();
+
+  // Update main catalog
+  const container = document.getElementById("categories");
+  container.innerHTML = "";
+  const results = q
+    ? movies.filter(m =>
+        m.title.toLowerCase().includes(q) ||
+        m.genres.some(g => g.toLowerCase().includes(q)) ||
+        m.actors.some(a => a.toLowerCase().includes(q))
+      )
+    : getFiltered();
+  const section = document.createElement("section");
+  section.className = "cat-section";
+  section.innerHTML = `<h2 class="cat-title">${q ? 'Resultados para "' + this.value + '"' : "Todos"}</h2><div class="movies-grid"></div>`;
+  const grid = section.querySelector(".movies-grid");
+  if (results.length === 0) {
+    grid.innerHTML = `<p style="color:#555;padding:1rem 0;font-size:14px">Sin resultados.</p>`;
+  } else {
+    results.forEach(m => grid.appendChild(createCard(m)));
+  }
+  container.appendChild(section);
+
+  // Show preview dropdown
+  if (q.length === 0) {
+    searchPreview.classList.remove("visible");
+    return;
+  }
+
+  const previewResults = movies.filter(m =>
+    m.title.toLowerCase().includes(q) ||
+    m.genres.some(g => g.toLowerCase().includes(q)) ||
+    m.actors.some(a => a.toLowerCase().includes(q))
+  ).slice(0, 5);
+
+  previewList.innerHTML = "";
+
+  if (previewResults.length === 0) {
+    previewList.innerHTML = `<div class="preview-empty">Sin resultados para "${this.value}"</div>`;
+  } else {
+    previewResults.forEach(m => {
+      const item = document.createElement("div");
+      item.className = "preview-item";
+      item.innerHTML = `
+        <img src="${m.poster}" alt="${m.title}" onerror="this.src='https://via.placeholder.com/36x54/111/444?text=?'"/>
+        <div class="preview-item-info">
+          <p class="preview-item-title">${m.title}</p>
+          <p class="preview-item-sub">${m.year} · ${m.type} · ${m.genres[0]}</p>
+        </div>
+        <span class="preview-item-rating">★ ${m.rating}</span>`;
+      item.addEventListener("click", () => {
+        openDetail(m);
+        searchPreview.classList.remove("visible");
+        searchInput.value = "";
+      });
+      previewList.appendChild(item);
+    });
+  }
+
+  searchPreview.classList.add("visible");
+});
+
+// Close preview when clicking outside
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".search-wrap")) {
+    searchPreview.classList.remove("visible");
+  }
+});
+
+// Buttons
+document.getElementById("logo-btn").addEventListener("click", () => {
+  document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("active"));
+  document.querySelector(".fbtn[data-filter='all']").classList.add("active");
+  currentFilter = "all";
+  showCatalog();
+});
+document.getElementById("back-btn").addEventListener("click", showCatalog);
+document.getElementById("btn-play-detail").addEventListener("click", playMovie);
+document.getElementById("player-close-btn").addEventListener("click", closePlayer);
+document.getElementById("btn-mi-lista").addEventListener("click", () => {
+  if (currentMovie) toggleLista(currentMovie);
+});
+
+// ── PELÍCULA DESTACADA (cambia cada 2 días) ───────────────────
+function getFeatured() {
+  const top = [...movies].sort((a, b) => b.rating - a.rating).slice(0, 5);
+  const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 2));
+  return top[dayIndex % top.length];
+}
+
+function renderHero(movie) {
+  document.getElementById("hero-img").src = movie.backdrop;
+  document.getElementById("hero-title").textContent = movie.title;
+  document.getElementById("hero-match").textContent = movie.match + " relevante";
+  document.getElementById("hero-badge").textContent = movie.age;
+  document.getElementById("hero-dur").textContent = movie.duration + " · " + movie.genres[0];
+  document.getElementById("hero-desc").textContent = movie.description;
+  document.getElementById("hero-play-btn").onclick = () => { openDetail(movie); setTimeout(playMovie, 150); };
+  document.getElementById("hero-info-btn").onclick = () => openDetail(movie);
+}
+
+const featured = getFeatured();
+renderHero(featured);
+</script>
+</body>
+</html>
